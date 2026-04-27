@@ -1,10 +1,37 @@
 public class MeasurementApp {
 
-    public static class Feet {
-        private final double value;
+    public static class Length {
 
-        public Feet(double value) {
+        private final double value;
+        private final LengthUnit unit;
+
+        public enum LengthUnit {
+            FEET(12.0),
+            INCHES(1.0),
+            YARDS(36.0),
+            CENTIMETERS(0.393701);
+
+            private final double factor;
+
+            LengthUnit(double factor) {
+                this.factor = factor;
+            }
+
+            public double getFactor() {
+                return factor;
+            }
+        }
+
+        public Length(double value, LengthUnit unit) {
+            if (unit == null) {
+                throw new IllegalArgumentException("Unit cannot be null");
+            }
             this.value = value;
+            this.unit = unit;
+        }
+
+        private double toBaseUnit() {
+            return value * unit.getFactor();
         }
 
         @Override
@@ -12,15 +39,29 @@ public class MeasurementApp {
             if (this == obj) return true;
             if (obj == null) return false;
             if (getClass() != obj.getClass()) return false;
-            Feet other = (Feet) obj;
-            return Double.compare(this.value, other.value) == 0;
+
+            Length other = (Length) obj;
+            return Double.compare(this.toBaseUnit(), other.toBaseUnit()) == 0;
         }
     }
 
-    public static void main(String[] args) {
-        Feet f1 = new Feet(1.0);
-        Feet f2 = new Feet(1.0);
+    public static boolean compare(double v1, Length.LengthUnit u1,
+                                  double v2, Length.LengthUnit u2) {
+        return new Length(v1, u1).equals(new Length(v2, u2));
+    }
 
-        System.out.println("Equal: " + f1.equals(f2));
+    public static void main(String[] args) {
+
+        System.out.println(compare(1.0, Length.LengthUnit.YARDS,
+                3.0, Length.LengthUnit.FEET));
+
+        System.out.println(compare(1.0, Length.LengthUnit.YARDS,
+                36.0, Length.LengthUnit.INCHES));
+
+        System.out.println(compare(1.0, Length.LengthUnit.CENTIMETERS,
+                0.393701, Length.LengthUnit.INCHES));
+
+        System.out.println(compare(30.48, Length.LengthUnit.CENTIMETERS,
+                1.0, Length.LengthUnit.FEET));
     }
 }
