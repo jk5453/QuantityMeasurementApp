@@ -26,6 +26,9 @@ public class MeasurementApp {
             if (unit == null) {
                 throw new IllegalArgumentException("Unit cannot be null");
             }
+            if (!Double.isFinite(value)) {
+                throw new IllegalArgumentException("Invalid value");
+            }
             this.value = value;
             this.unit = unit;
         }
@@ -34,34 +37,52 @@ public class MeasurementApp {
             return value * unit.getFactor();
         }
 
+
+        public static double convert(double value, LengthUnit from, LengthUnit to) {
+            if (from == null || to == null) {
+                throw new IllegalArgumentException("Unit cannot be null");
+            }
+            if (!Double.isFinite(value)) {
+                throw new IllegalArgumentException("Invalid value");
+            }
+
+            double base = value * from.getFactor();
+            return base / to.getFactor();
+        }
+
+        // ✅ Instance conversion (returns new object)
+        public Length convertTo(LengthUnit target) {
+            double result = convert(this.value, this.unit, target);
+            return new Length(result, target);
+        }
+
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
+            if (obj == null || getClass() != obj.getClass()) return false;
 
             Length other = (Length) obj;
             return Double.compare(this.toBaseUnit(), other.toBaseUnit()) == 0;
         }
-    }
 
-    public static boolean compare(double v1, Length.LengthUnit u1,
-                                  double v2, Length.LengthUnit u2) {
-        return new Length(v1, u1).equals(new Length(v2, u2));
+        @Override
+        public String toString() {
+            return value + " " + unit;
+        }
     }
 
     public static void main(String[] args) {
 
-        System.out.println(compare(1.0, Length.LengthUnit.YARDS,
-                3.0, Length.LengthUnit.FEET));
+        System.out.println(Length.convert(1.0,
+                Length.LengthUnit.FEET,
+                Length.LengthUnit.INCHES));
 
-        System.out.println(compare(1.0, Length.LengthUnit.YARDS,
-                36.0, Length.LengthUnit.INCHES));
+        System.out.println(Length.convert(3.0,
+                Length.LengthUnit.YARDS,
+                Length.LengthUnit.FEET));
 
-        System.out.println(compare(1.0, Length.LengthUnit.CENTIMETERS,
-                0.393701, Length.LengthUnit.INCHES));
-
-        System.out.println(compare(30.48, Length.LengthUnit.CENTIMETERS,
-                1.0, Length.LengthUnit.FEET));
+        System.out.println(new Length(2.0,
+                Length.LengthUnit.YARDS)
+                .convertTo(Length.LengthUnit.INCHES));
     }
 }

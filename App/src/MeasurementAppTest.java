@@ -8,86 +8,92 @@ public class MeasurementAppTest {
     MeasurementApp.Length.LengthUnit YARDS = MeasurementApp.Length.LengthUnit.YARDS;
     MeasurementApp.Length.LengthUnit CM = MeasurementApp.Length.LengthUnit.CENTIMETERS;
 
+    double EPS = 0.0001;
+
     @Test
-    public void testYardToYard_SameValue() {
-        assertTrue(new MeasurementApp.Length(1.0, YARDS)
-                .equals(new MeasurementApp.Length(1.0, YARDS)));
+    public void testFeetToInches() {
+        assertEquals(12.0,
+                MeasurementApp.Length.convert(1.0, FEET, INCHES),
+                EPS);
     }
 
     @Test
-    public void testYardToYard_DifferentValue() {
-        assertFalse(new MeasurementApp.Length(1.0, YARDS)
-                .equals(new MeasurementApp.Length(2.0, YARDS)));
+    public void testInchesToFeet() {
+        assertEquals(2.0,
+                MeasurementApp.Length.convert(24.0, INCHES, FEET),
+                EPS);
     }
 
     @Test
-    public void testYardToFeet_Equivalent() {
-        assertTrue(new MeasurementApp.Length(1.0, YARDS)
-                .equals(new MeasurementApp.Length(3.0, FEET)));
+    public void testYardsToInches() {
+        assertEquals(36.0,
+                MeasurementApp.Length.convert(1.0, YARDS, INCHES),
+                EPS);
     }
 
     @Test
-    public void testFeetToYard_Equivalent() {
-        assertTrue(new MeasurementApp.Length(3.0, FEET)
-                .equals(new MeasurementApp.Length(1.0, YARDS)));
+    public void testInchesToYards() {
+        assertEquals(2.0,
+                MeasurementApp.Length.convert(72.0, INCHES, YARDS),
+                EPS);
     }
 
     @Test
-    public void testYardToInches_Equivalent() {
-        assertTrue(new MeasurementApp.Length(1.0, YARDS)
-                .equals(new MeasurementApp.Length(36.0, INCHES)));
+    public void testCentimeterToInches() {
+        assertEquals(1.0,
+                MeasurementApp.Length.convert(2.54, CM, INCHES),
+                EPS);
     }
 
     @Test
-    public void testInchesToYard_Equivalent() {
-        assertTrue(new MeasurementApp.Length(36.0, INCHES)
-                .equals(new MeasurementApp.Length(1.0, YARDS)));
+    public void testFeetToYards() {
+        assertEquals(2.0,
+                MeasurementApp.Length.convert(6.0, FEET, YARDS),
+                EPS);
     }
 
     @Test
-    public void testYardToFeet_NotEqual() {
-        assertFalse(new MeasurementApp.Length(1.0, YARDS)
-                .equals(new MeasurementApp.Length(2.0, FEET)));
+    public void testZeroValue() {
+        assertEquals(0.0,
+                MeasurementApp.Length.convert(0.0, FEET, INCHES),
+                EPS);
     }
 
     @Test
-    public void testCentimeterToInches_Equivalent() {
-        assertTrue(new MeasurementApp.Length(1.0, CM)
-                .equals(new MeasurementApp.Length(0.393701, INCHES)));
+    public void testNegativeValue() {
+        assertEquals(-12.0,
+                MeasurementApp.Length.convert(-1.0, FEET, INCHES),
+                EPS);
     }
 
     @Test
-    public void testCentimeterToFeet_NotEqual() {
-        assertFalse(new MeasurementApp.Length(1.0, CM)
-                .equals(new MeasurementApp.Length(1.0, FEET)));
+    public void testRoundTrip() {
+        double v = 5.0;
+        double result = MeasurementApp.Length.convert(
+                MeasurementApp.Length.convert(v, FEET, INCHES),
+                INCHES, FEET);
+
+        assertEquals(v, result, EPS);
     }
 
     @Test
-    public void testTransitiveProperty() {
-        MeasurementApp.Length a = new MeasurementApp.Length(1.0, YARDS);
-        MeasurementApp.Length b = new MeasurementApp.Length(3.0, FEET);
-        MeasurementApp.Length c = new MeasurementApp.Length(36.0, INCHES);
-
-        assertTrue(a.equals(b));
-        assertTrue(b.equals(c));
-        assertTrue(a.equals(c));
-    }
-
-    @Test
-    public void testNullComparison() {
-        assertFalse(new MeasurementApp.Length(1.0, FEET).equals(null));
-    }
-
-    @Test
-    public void testSameReference() {
-        MeasurementApp.Length l = new MeasurementApp.Length(1.0, FEET);
-        assertTrue(l.equals(l));
+    public void testSameUnit() {
+        assertEquals(5.0,
+                MeasurementApp.Length.convert(5.0, FEET, FEET),
+                EPS);
     }
 
     @Test
     public void testInvalidUnit() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new MeasurementApp.Length(1.0, null);
+            MeasurementApp.Length.convert(1.0, null, FEET);
+        });
+    }
+
+    @Test
+    public void testInvalidValue() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            MeasurementApp.Length.convert(Double.NaN, FEET, INCHES);
         });
     }
 }
