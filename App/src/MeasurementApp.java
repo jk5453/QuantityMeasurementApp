@@ -7,7 +7,9 @@ public class MeasurementApp {
 
         public enum LengthUnit {
             FEET(12.0),
-            INCHES(1.0);
+            INCHES(1.0),
+            YARDS(36.0),
+            CENTIMETERS(0.393701);
 
             private final double factor;
 
@@ -50,13 +52,16 @@ public class MeasurementApp {
 
     public static void main(String[] args) {
 
-        System.out.println(compare(1.0, Length.LengthUnit.FEET,
-                12.0, Length.LengthUnit.INCHES));
+        System.out.println(compare(1.0, Length.LengthUnit.YARDS,
+                3.0, Length.LengthUnit.FEET));
 
-        System.out.println(compare(1.0, Length.LengthUnit.FEET,
+        System.out.println(compare(1.0, Length.LengthUnit.YARDS,
+                36.0, Length.LengthUnit.INCHES));
+
+        System.out.println(compare(1.0, Length.LengthUnit.CENTIMETERS,
+                0.393701, Length.LengthUnit.INCHES));
+
+        System.out.println(compare(30.48, Length.LengthUnit.CENTIMETERS,
                 1.0, Length.LengthUnit.FEET));
-
-        System.out.println(compare(1.0, Length.LengthUnit.INCHES,
-                2.0, Length.LengthUnit.INCHES));
     }
 }
